@@ -6,13 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ec5aec39-503d-4d0c-a513-6d0f368c3483" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Experimental/Factions_Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Experimental/Factions_Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameFunctionality.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFunctionality.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Goblin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Goblin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Human.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Human.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Martian.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Martian.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Zombie.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HUMANOID_FAMILY/Zombie.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +20,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/src" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -95,23 +88,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/GameFunctionality.java</url>
-          <line>278</line>
-          <option name="timeStamp" value="2" />
+          <line>399</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/GameFunctionality.java</url>
-          <line>279</line>
-          <option name="timeStamp" value="3" />
+          <line>400</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/GameFunctionality.java</url>
-          <line>141</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/GameFunctionality.java</url>
-          <line>142</line>
-          <option name="timeStamp" value="5" />
+          <line>208</line>
+          <option name="timeStamp" value="107" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

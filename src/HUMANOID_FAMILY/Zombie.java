@@ -31,18 +31,18 @@ public class Zombie extends Humanoid {
     public Zombie(Random random, int[] coordinates) {
         this.health = 10;
         this.combatLVL = (this.defence + this.attack + this.strength + this.intelligence + this.compassion) / 5;
-        this.attack = random.ints(6, 7).findFirst().getAsInt();
-        this.strength = random.ints(3, 7).findFirst().getAsInt();
-        this.defence = random.ints(1, 2).findFirst().getAsInt();
-        this.intelligence = random.ints(1, 10).findFirst().getAsInt();
-        this.compassion = random.ints(0, 2).findFirst().getAsInt();
+        this.attack = random.ints(5, 10 + 50).findFirst().getAsInt();
+        this.strength = random.ints(2, 10 + 50).findFirst().getAsInt();
+        this.defence = random.ints(2, 3 + 50).findFirst().getAsInt();
+        this.intelligence = random.ints(2, 3 + 50).findFirst().getAsInt();
+        this.compassion = random.ints(2, 3 + 50).findFirst().getAsInt();
         this.coordinates = coordinates;
         this.inventory = new ArrayList<>();
     }
 
 
     // overloaded dispatched __INIT__() with 5 (int) arguments
-    public Zombie(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates, int combatLVL) {
+    public Zombie(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates ) {
         this.attack = attack;
         this.strength = strength;
         this.defence = defence;

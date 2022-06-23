@@ -29,17 +29,17 @@ public class Human extends Humanoid {
     public Human(Random random, int[] coordinates) {
         this.health = 10;
         this.combatLVL = (this.defence + this.attack + this.strength + this.intelligence + this.compassion) / 5;
-        this.attack = random.ints(3, 9).findFirst().getAsInt();
-        this.strength = random.ints(5, 7).findFirst().getAsInt();
-        this.defence = random.ints(3, 7).findFirst().getAsInt();
-        this.intelligence = random.ints(1, 10).findFirst().getAsInt();
-        this.compassion = random.ints(0, 2).findFirst().getAsInt();
+        this.attack = random.ints(3, 9 + 50).findFirst().getAsInt();
+        this.strength = random.ints(5, 7 + 50).findFirst().getAsInt();
+        this.defence = random.ints(3, 7 + 50).findFirst().getAsInt();
+        this.intelligence = random.ints(2, 10 + 50).findFirst().getAsInt();
+        this.compassion = random.ints(2, 9 + 50).findFirst().getAsInt();
         this.coordinates = coordinates;
         this.inventory = new ArrayList<>();
     }
 
 
-    public Human(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates, int combatLVL) {
+    public Human(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates ) {
         this.attack = attack;
         this.strength = strength;
         this.defence = defence;

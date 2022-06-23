@@ -117,8 +117,8 @@ public class Main {
         int round = 1;
         while (running) {
             player1_turn = !player1_turn;
-            List current_mobs = (player1_turn ? player_one_mobs : player_two_mobs);
-            List enemy_mobs = (player1_turn ? player_two_mobs : player_one_mobs);
+            List<Object> current_mobs = (player1_turn ? player_one_mobs : player_two_mobs);
+            List<Object> enemy_mobs = (player1_turn ? player_two_mobs : player_one_mobs);
 
 
             // DISPLAY GAME
@@ -155,26 +155,6 @@ public class Main {
 
                 }
                 if (i == 6) {
-                    System.out.print("cb lvl".toUpperCase() + "\t\t");
-                    for (int x = 0; x < current_mobs.size(); x++) {
-                        if (current_mobs.get(x) instanceof Human) {
-                            Human human = (Human) current_mobs.get(x);
-                            System.out.print(human.getCombatLVL() + "\t|\t");
-                        } else if (current_mobs.get(x) instanceof Goblin) {
-                            Goblin goblin = (Goblin) current_mobs.get(x);
-                            System.out.print(goblin.getCombatLVL() + "\t|\t");
-                        } else if (current_mobs.get(x) instanceof Zombie) {
-                            Zombie zombie = (Zombie) current_mobs.get(x);
-                            System.out.print(zombie.getCombatLVL() + "\t|\t");
-                        } else if (current_mobs.get(x) instanceof Martian) {
-                            Martian martian = (Martian) current_mobs.get(x);
-                            System.out.print(martian.getCombatLVL() + "\t|\t");
-                        }
-
-                    }
-
-                }
-                if (i == 7) {
                     System.out.print("atk".toUpperCase() + "\t\t\t");
                     for (int x = 0; x < current_mobs.size(); x++) {
                         if (current_mobs.get(x) instanceof Human) {
@@ -194,7 +174,7 @@ public class Main {
                     }
 
                 }
-                if (i == 8) {
+                if (i == 7) {
                     System.out.print("str".toUpperCase() + "\t\t\t");
                     for (int x = 0; x < current_mobs.size(); x++) {
                         if (current_mobs.get(x) instanceof Human) {
@@ -214,7 +194,7 @@ public class Main {
                     }
 
                 }
-                if (i == 9) {
+                if (i == 8) {
                     System.out.print("def".toUpperCase() + "\t\t\t");
                     for (int x = 0; x < current_mobs.size(); x++) {
                         if (current_mobs.get(x) instanceof Human) {
@@ -233,7 +213,7 @@ public class Main {
                     }
 
                 }
-                if (i == 10) {
+                if (i == 9) {
                     System.out.print("\t\t\t");
                     for (int x = 0; x < current_mobs.size(); x++) {
                         int len = String.valueOf(current_mobs.get(x)).length();
@@ -244,6 +224,9 @@ public class Main {
                 }
 
                 //MESSAGE BOX
+                if (i == 11) {
+                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
+                }
                 if (i == 12) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
@@ -254,6 +237,9 @@ public class Main {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
                 if (i == 15) {
+                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
+                }
+                if (i == 16) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
 

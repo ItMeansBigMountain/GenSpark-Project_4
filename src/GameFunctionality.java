@@ -81,10 +81,9 @@ public class GameFunctionality implements KeyListener {
     }
 
 
-    public static List<Object> fight(Stack<String> messages, List<Object> enemy_mobs, Object selected_mob, int[] to, boolean player1) {
+    public static List<Object> fight(HashMap<String, HashMap<String, Method>> selected_mob_functions, Stack<String> messages, List<Object> enemy_mobs, Object selected_mob, int[] to, boolean player1) {
         List<Object> output = new ArrayList<>();
         Object winner = null;
-
 
         //FIND ENEMY_MOB WHO COLLIDES WITH SELECTED MOB
         //RUN RANDOM PROBABILITIES BASED ON THEIR STATISTICS TO DECIDE WHO WINS
@@ -138,12 +137,138 @@ public class GameFunctionality implements KeyListener {
 
 
         //FIGHT decide winner
-        //BOTH OBJECTS HAVE SAME INTERACTION FUNCTIONS
-        System.out.println(iteration_mob);
-        System.out.println(interactive_functions);
-        //choose a random skill
-        //find range from 0 --> random skill
-        //check who's bigger
+        //SELECTED PLAYER FUNCTIONS
+        Method selected_player_get_cb_lvl = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getCombatLVL()");
+        Method selected_player_get_health = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getHealth()");
+        Method selected_player_get_attack = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getAttack()");
+        Method selected_player_get_strength = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getStrength()");
+        Method selected_player_get_defence = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getDefence()");
+        Method selected_player_get_intelligence = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getIntelligence()");
+        Method selected_player_get_compassion = Humanoid.fetchMethod(selected_mob_functions.get("getters"), "getCompassion()");
+        Method selected_player_set_health = Humanoid.fetchMethod(selected_mob_functions.get("setters"), "setHealth(int)");
+
+
+        // ENEMY METHODS
+        Method get_cb_lvl = Humanoid.fetchMethod(getters, "getCombatLVL()");
+        Method get_health = Humanoid.fetchMethod(getters, "getHealth()");
+        Method get_attack = Humanoid.fetchMethod(getters, "getAttack()");
+        Method get_strength = Humanoid.fetchMethod(getters, "getStrength()");
+        Method get_defence = Humanoid.fetchMethod(getters, "getDefence()");
+        Method get_intelligence = Humanoid.fetchMethod(getters, "getIntelligence()");
+        Method get_compassion = Humanoid.fetchMethod(getters, "getCompassion()");
+        Method set_health = Humanoid.fetchMethod(setters, "setHealth(int)");
+
+        //simulate your attack/defence roll
+        //simulate their attack/defence roll
+        //do maths and iterations to subtract hp
+        //find winner
+        //push fight stats to message board
+        String fight_round_results = "";
+        try {
+            Random random = new Random();
+
+            //INIT STAT METHODS
+            int selected_cb = (int) selected_player_get_cb_lvl.invoke(selected_mob);
+            int selected_hp = (int) selected_player_get_health.invoke(selected_mob);
+            int selected_attack = (int) selected_player_get_attack.invoke(selected_mob);
+            int selected_strength = (int) selected_player_get_strength.invoke(selected_mob);
+            int selected_defence = (int) selected_player_get_defence.invoke(selected_mob);
+            int selected_intelligence = (int) selected_player_get_intelligence.invoke(selected_mob);
+            int selected_compassion = (int) selected_player_get_compassion.invoke(selected_mob);
+
+            int enemy_cb = (int) get_cb_lvl.invoke(iteration_mob);
+            int enemy_hp = (int) get_health.invoke(iteration_mob);
+            int enemy_attack = (int) get_attack.invoke(iteration_mob);
+            int enemy_strength = (int) get_strength.invoke(iteration_mob);
+            int enemy_defence = (int) get_defence.invoke(iteration_mob);
+            int enemy_intelligence = (int) get_intelligence.invoke(iteration_mob);
+            int enemy_compassion = (int) get_compassion.invoke(iteration_mob);
+
+
+            //INIT RANDOM RANGES FROM THESE STATS
+            int your_random_atk;
+            int your_random_def;
+            int your_random_intel;
+            int your_random_compassion;
+            int your_random_str;
+            double your_atk;
+            double your_def;
+
+            int their_random_atk;
+            int their_random_def;
+            int their_random_intel;
+            int their_random_compassion;
+            int their_random_str;
+            double their_atk;
+            double their_def;
+
+
+
+            // RUNESCAPE calculate "e" for both players :
+            int round_number = 0;
+            while ((int) selected_player_get_health.invoke(selected_mob) > 0 && (int) get_health.invoke(iteration_mob) > 0) {
+
+                //RANDOM PLAYER STATS RNG
+                your_random_atk = random.ints(1, selected_attack).findFirst().getAsInt();
+                your_random_def = random.ints(1, selected_defence).findFirst().getAsInt();
+                your_random_intel = random.ints(1, selected_intelligence).findFirst().getAsInt();
+                your_random_compassion = random.ints(1, selected_compassion).findFirst().getAsInt();
+                your_random_str = random.ints(1, selected_strength).findFirst().getAsInt();
+
+                your_atk = (Math.floor(Math.ceil(your_random_atk * your_random_intel) - your_random_compassion) * (your_random_str + 64));
+                your_def = (Math.floor(Math.ceil(your_random_def * your_random_intel) - your_random_compassion) * (your_random_str + 64));
+
+                //RANDOM ENEMY STATS RNG
+                their_random_atk = random.ints(1, enemy_attack).findFirst().getAsInt();
+                their_random_def = random.ints(1, enemy_defence).findFirst().getAsInt();
+                their_random_intel = random.ints(1, enemy_intelligence).findFirst().getAsInt();
+                their_random_compassion = random.ints(1, enemy_compassion).findFirst().getAsInt();
+                their_random_str = random.ints(1, enemy_strength).findFirst().getAsInt();
+
+                their_atk = Math.floor(Math.ceil(their_random_atk * their_random_intel) - their_random_compassion) * (their_random_str + 64);
+                their_def = Math.floor(Math.ceil(their_random_def * their_random_intel) - their_random_compassion) * (their_random_str + 64);
+
+
+                //DISPLAY FIGHT HITS
+                int hp;
+                if (your_atk > their_def) {
+                    hp = (int) get_health.invoke(iteration_mob);
+                    set_health.invoke(iteration_mob, hp - 1);
+                    fight_round_results += "A ";
+                } else if (their_atk > your_def) {
+                    hp = (int) selected_player_get_health.invoke(selected_mob);
+                    selected_player_set_health.invoke(selected_mob, hp - 1);
+                    fight_round_results += "D ";
+                }
+
+
+                //ROUND RESULTS
+                System.out.println("Attacker: " + your_atk + "\tvs.\t" + "Defenders: " + their_def);
+                System.out.println("Attacker: " + your_def + "\tvs.\t" + "Defenders: " + their_atk  );
+
+                round_number++;
+            }
+
+
+            //RIGHT AFTER THE FIGHT
+            if ((int) selected_player_get_health.invoke(selected_mob) > (int) get_health.invoke(iteration_mob)) {
+                System.out.println(player1 ? "Player one " : "player two " + "wins the fight!");
+                winner = selected_mob;
+            } else {
+                System.out.println(player1 ? "Player two " : "player one " + "wins the fight!");
+                winner = iteration_mob;
+
+            }
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("There was a problem calculating a winner");
+        }
+
+
+        //IF ATK ROLL BIGGER -> (1 – [(DEF + 2) / (2 x (ATK + 1))]
+        //IF DEF ROLL BIGGER ->  [ATK/ (2 x DEF +1)]
 
         //attack
         //strength
@@ -156,14 +281,10 @@ public class GameFunctionality implements KeyListener {
         //inventory
 
 
-
-
-
-
-
         //MESSAGE BOX UPDATE (4 lines MAX ) & RETURN SUCCESSFUL
-        messages.push(player1 ? "Player one attacked Player two" : "Player two attacked Player one");
         messages.push("Winner: " + winner);
+        messages.push( "ROUND RESULTS: " +  fight_round_results );
+        messages.push(player1 ? "Player one attacked Player two" : "Player two attacked Player one");
 
         output.add(messages);
         output.add(winner);
@@ -260,12 +381,12 @@ public class GameFunctionality implements KeyListener {
             if (!(gameBoard[to[0]][to[1]] == 9)) {
 
                 //FIGHT!
-                fight_outcome = fight(messages, enemy_mobs, selected_mob, to, player1_turn);
+                fight_outcome = fight(interactive_functions, messages, enemy_mobs, selected_mob, to, player1_turn);
 
                 messages = (Stack<String>) fight_outcome.get(0);
                 String winner = (String) fight_outcome.get(1);
 
-                if (winner == null) {
+                if (winner != null) {
                     //INVALID  RETURN
                     System.out.println("YOU CANNOT ATTACK MATES.");
                     output.add(false);
@@ -280,8 +401,8 @@ public class GameFunctionality implements KeyListener {
                     //REMOVE LOSER FROM EITHER current_mobs OR enemy_mobs
                     System.out.println(current_mobs); // update if enemy wins
                     System.out.println(enemy_mobs); // update if you win
-                    System.out.println(gameBoard); // update to winner
                     System.out.println(messages); // push winner title
+                    System.out.println(gameBoard); // update to winner
 
                 }
 
