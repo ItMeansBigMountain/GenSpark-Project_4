@@ -213,13 +213,34 @@ public class Main {
                     }
 
                 }
+
                 if (i == 9) {
+                    System.out.print("vertex".toUpperCase() + "\t  ");
+                    for (int x = 0; x < current_mobs.size(); x++) {
+                        if (current_mobs.get(x) instanceof Human) {
+                            Human human = (Human) current_mobs.get(x);
+                            System.out.print("["+human.getCoordinate()[1] + "," + human.getCoordinate()[0]+ "]  "  );
+                        } else if (current_mobs.get(x) instanceof Goblin) {
+                            Goblin goblin = (Goblin) current_mobs.get(x);
+                            System.out.print("["+goblin.getCoordinate()[1] + "," + goblin.getCoordinate()[0]+ "]  "  );
+                        } else if (current_mobs.get(x) instanceof Zombie) {
+                            Zombie zombie = (Zombie) current_mobs.get(x);
+                            System.out.print("["+zombie.getCoordinate()[1] + "," + zombie.getCoordinate()[0]+ "]  "  );
+                        } else if (current_mobs.get(x) instanceof Martian) {
+                            Martian martian = (Martian) current_mobs.get(x);
+                            System.out.print( "["+ martian.getCoordinate()[1] + "," + martian.getCoordinate()[0] + "]  "  );
+                        }
+
+                    }
+                }
+
+                if (i == 10) {
                     System.out.print("\t\t\t");
                     for (int x = 0; x < current_mobs.size(); x++) {
                         int len = String.valueOf(current_mobs.get(x)).length();
                         String first_letter = String.valueOf(String.valueOf(current_mobs.get(x)).charAt(0)).toLowerCase();
                         String lvl = String.valueOf(current_mobs.get(x)).split(":")[1];
-                        System.out.print(  first_letter  + lvl   + "\t\t");
+                        System.out.print(first_letter + lvl + "\t\t");
                     }
                 }
 
