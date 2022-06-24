@@ -45,7 +45,7 @@ public class GameFunctionality implements KeyListener {
 
 
     //CONSOLE APPLICATION
-    public int[][] validateCharacterSelect(String choice) {
+    public int[][] validateCharacterSelect(String choice, int[] dice) {
 
         // " 21,6 . 16,6 "
         String[] str_arr = choice.split("[.]");
@@ -62,7 +62,6 @@ public class GameFunctionality implements KeyListener {
             str_arr[x] = str_arr[x].strip();
         }
 
-
         try {
             //ASSIGN INPUT DATA
             String[] from_coordinate_string = str_arr[0].split(",");
@@ -71,8 +70,20 @@ public class GameFunctionality implements KeyListener {
             int[] from = {Integer.parseInt(from_coordinate_string[1]), Integer.parseInt(from_coordinate_string[0])};
             int[] to = {Integer.parseInt(to_coordinate_string[1]), Integer.parseInt(to_coordinate_string[0])};
 
+
+            //CHECK IF "TO" COORDINATE WITHIN RANGE OF GAME PIECE
+            if (to[1] < (from[1] - dice[1]) || to[1] > (dice[1] + from[1])    ) { //HORIZONTAL    8,12    5,5
+                throw new IllegalArgumentException();
+            }
+            if (to[0] < (from[0] - dice[0]) || to[0] > (dice[0] + from[0] )  ) { //VERTICAL
+                throw new IllegalArgumentException();
+            }
+
             return new int[][]{from, to};
 
+        } catch (IllegalArgumentException e) {
+            System.out.println(String.format("Please enter coordinates\nHORIZONTAL: %o\nVERTICAL: %o",dice[1] , dice[0]));
+            return null;
         } catch (Exception e) {
             System.out.println("Please enter a valid option!\n");
             return null;
@@ -244,8 +255,10 @@ public class GameFunctionality implements KeyListener {
 
 
                 //ROUND RESULTS
-                System.out.println("Attacker: " + your_atk + "\tvs.\t" + "Defenders: " + their_def);
-                System.out.println("Attacker: " + your_def + "\tvs.\t" + "Defenders: " + their_atk + "\t" + fight_round_results.charAt(fight_round_results.length() - 1));
+                System.out.println(fight_round_results.charAt(fight_round_results.length() - 2) == 'A' ? "ATTACK WINS" : "DEFENCE WINS");
+                System.out.println("atk roll\t Attacker: " + your_atk + "\tvs.\t" + "Defenders: " + their_def);
+                System.out.println("def roll\t Attacker: " + your_def + "\tvs.\t" + "Defenders: " + their_atk);
+                System.out.println("------------");
 
                 round_number++;
             }
@@ -374,7 +387,6 @@ public class GameFunctionality implements KeyListener {
 
                 //FIGHT!
                 fight_outcome = fight(interactive_functions, messages, enemy_mobs, selected_mob, to, player1_turn);
-
                 messages = (Stack<String>) fight_outcome.get(0);
                 Object winner = (Object) fight_outcome.get(1);
 
@@ -389,7 +401,9 @@ public class GameFunctionality implements KeyListener {
                     output.add(messages);
                     return output;
 
-                } else {
+                }
+                //VALID FIGHT RESULTS
+                else {
                     //REMOVE LOSER FROM EITHER current_mobs OR enemy_mobs
                     Character team = (Character) fight_outcome.get(2);
                     HashMap<String, HashMap<String, Method>> enemy_functions = (HashMap<String, HashMap<String, Method>>) fight_outcome.get(3);
