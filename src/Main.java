@@ -116,6 +116,7 @@ public class Main {
         boolean running = true;
         int round = 1;
         while (running) {
+
             player1_turn = !player1_turn;
             List<Object> current_mobs = (player1_turn ? player_one_mobs : player_two_mobs);
             List<Object> enemy_mobs = (player1_turn ? player_two_mobs : player_one_mobs);
@@ -244,13 +245,10 @@ public class Main {
                     }
                 }
 
+
+
+
                 //MESSAGE BOX
-                if (i == 11) {
-                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
-                }
-                if (i == 12) {
-                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
-                }
                 if (i == 13) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
@@ -263,6 +261,15 @@ public class Main {
                 if (i == 16) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
+                if (i == 17) {
+                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
+                }
+                if (i == 18) {
+                    if (!message_box.isEmpty()) System.out.print(message_box.pop());
+                }
+
+
+
 
                 if (i == 22) System.out.print("Choose Player & Location");
             }

@@ -80,7 +80,6 @@ public class GameFunctionality implements KeyListener {
 
     }
 
-
     public static List<Object> fight(HashMap<String, HashMap<String, Method>> selected_mob_functions, Stack<String> messages, List<Object> enemy_mobs, Object selected_mob, int[] to, boolean player1) {
         List<Object> output = new ArrayList<>();
         Object winner = null;
@@ -92,6 +91,7 @@ public class GameFunctionality implements KeyListener {
 
         // FETCH OBJECT METHODS FROM TROOPS (current_mobs) LIST
         Object iteration_mob = null;
+        int mob_index = 0;
         HashMap<String, HashMap<String, Method>> interactive_functions = null;
         HashMap<String, Method> setters = null;
         HashMap<String, Method> getters = null;
@@ -103,6 +103,7 @@ public class GameFunctionality implements KeyListener {
         for (int i = 0; i < enemy_mobs.size(); i++) {
             //CALL SETTERS & GETTERS OF INTERACTED OBJECT
             iteration_mob = enemy_mobs.get(i);
+            mob_index = i;
             interactive_functions = Humanoid.setters_and_getters(iteration_mob);
             setters = interactive_functions.get("setters");
             getters = interactive_functions.get("getters");
@@ -164,6 +165,7 @@ public class GameFunctionality implements KeyListener {
         //find winner
         //push fight stats to message board
         String fight_round_results = "";
+        String team = "";
         try {
             Random random = new Random();
 
@@ -203,8 +205,7 @@ public class GameFunctionality implements KeyListener {
             double their_def;
 
 
-
-            // RUNESCAPE calculate "e" for both players :
+            // FIGHT SIMULATION LOOP
             int round_number = 0;
             while ((int) selected_player_get_health.invoke(selected_mob) > 0 && (int) get_health.invoke(iteration_mob) > 0) {
 
@@ -244,20 +245,22 @@ public class GameFunctionality implements KeyListener {
 
                 //ROUND RESULTS
                 System.out.println("Attacker: " + your_atk + "\tvs.\t" + "Defenders: " + their_def);
-                System.out.println("Attacker: " + your_def + "\tvs.\t" + "Defenders: " + their_atk  );
+                System.out.println("Attacker: " + your_def + "\tvs.\t" + "Defenders: " + their_atk + "\t" + fight_round_results.charAt(fight_round_results.length() - 1));
 
                 round_number++;
             }
 
 
             //RIGHT AFTER THE FIGHT
-            if ((int) selected_player_get_health.invoke(selected_mob) > (int) get_health.invoke(iteration_mob)) {
-                System.out.println(player1 ? "Player one " : "player two " + "wins the fight!");
-                winner = selected_mob;
-            } else {
-                System.out.println(player1 ? "Player two " : "player one " + "wins the fight!");
-                winner = iteration_mob;
 
+            if ((int) selected_player_get_health.invoke(selected_mob) > (int) get_health.invoke(iteration_mob)) {
+                // System.out.println(player1 ? "Player one wins the fight!" : "player two wins the fight!");
+                winner = selected_mob;
+                team = "ATTACKER ";
+            } else {
+                // System.out.println(player1 ? "Player two wins the fight!" : "player one wins the fight!");
+                winner = iteration_mob;
+                team = "DEFENDER ";
             }
 
 
@@ -267,30 +270,18 @@ public class GameFunctionality implements KeyListener {
         }
 
 
-        //IF ATK ROLL BIGGER -> (1 – [(DEF + 2) / (2 x (ATK + 1))]
-        //IF DEF ROLL BIGGER ->  [ATK/ (2 x DEF +1)]
-
-        //attack
-        //strength
-        //defence
-        //combatLVL
-        //intelligence
-        //health
-        //compassion
-        //coordinates
-        //inventory
-
-
         //MESSAGE BOX UPDATE (4 lines MAX ) & RETURN SUCCESSFUL
-        messages.push("Winner: " + winner);
-        messages.push( "ROUND RESULTS: " +  fight_round_results );
+        messages.push("Winner:    " + team + winner);
+        messages.push("ROUND RESULTS: " + fight_round_results);
         messages.push(player1 ? "Player one attacked Player two" : "Player two attacked Player one");
 
         output.add(messages);
         output.add(winner);
+        output.add(team.charAt(0));
+        output.add(interactive_functions);
+        output.add(mob_index);
         return output;
     }
-
 
     public ArrayList<Object> coordinate(boolean player1_turn, Stack<String> messages, int[][] coordinates, int[][] gameBoard, List current_mobs, List enemy_mobs) {
         ArrayList<Object> output = new ArrayList<Object>();
@@ -332,7 +323,9 @@ public class GameFunctionality implements KeyListener {
         Boolean found = false;
         int[] current_coordinates = new int[2];
         Object selected_mob = null;
+        int selected_mob_index = 0;
         for (int i = 0; i < current_mobs.size(); i++) {
+            selected_mob_index = i;
             //CALL SETTERS & GETTERS OF INTERACTED OBJECT
             selected_mob = current_mobs.get(i);
             interactive_functions = Humanoid.setters_and_getters(selected_mob);
@@ -376,7 +369,6 @@ public class GameFunctionality implements KeyListener {
         Method set_location = Humanoid.fetchMethod(setters, "setCoordinate(int[])");
         Method get_location = Humanoid.fetchMethod(getters, "getCoordinate()");
         try {
-
             //COLLIDING WITH OTHER PLAYER WHEN MOVING
             if (!(gameBoard[to[0]][to[1]] == 9)) {
 
@@ -384,9 +376,10 @@ public class GameFunctionality implements KeyListener {
                 fight_outcome = fight(interactive_functions, messages, enemy_mobs, selected_mob, to, player1_turn);
 
                 messages = (Stack<String>) fight_outcome.get(0);
-                String winner = (String) fight_outcome.get(1);
+                Object winner = (Object) fight_outcome.get(1);
 
-                if (winner != null) {
+                //ERROR SKIPPING THIS
+                if (winner == null) {
                     //INVALID  RETURN
                     System.out.println("YOU CANNOT ATTACK MATES.");
                     output.add(false);
@@ -397,12 +390,43 @@ public class GameFunctionality implements KeyListener {
                     return output;
 
                 } else {
-                    //VALID
                     //REMOVE LOSER FROM EITHER current_mobs OR enemy_mobs
+                    Character team = (Character) fight_outcome.get(2);
+                    HashMap<String, HashMap<String, Method>> enemy_functions = (HashMap<String, HashMap<String, Method>>) fight_outcome.get(3);
+                    int enemy_mob_index = (int) fight_outcome.get(4);
+
+                    //SELECTED OBJECT WINS, remove winner from enemy_mobs
+                    if (team == 'A') {
+                        enemy_mobs.remove(enemy_mob_index);
+                        //SWAPPING PLAYER ON GAME BOARD!
+                        set_location.invoke(selected_mob, to);
+                        int temp = gameBoard[from[0]][from[1]];
+                        gameBoard[from[0]][from[1]] = 9;
+                        gameBoard[to[0]][to[1]] = temp;
+                    }
+
+                    //ENEMY OBJECT WINS, remove winner from current_mobs
+                    else {
+                        //SWAPPING PLAYER ON GAME BOARD!
+                        current_mobs.remove(selected_mob_index);
+                        gameBoard[from[0]][from[1]] = 9;
+
+                    }
+
+                    //DEBUG
                     System.out.println(current_mobs); // update if enemy wins
                     System.out.println(enemy_mobs); // update if you win
-                    System.out.println(messages); // push winner title
-                    System.out.println(gameBoard); // update to winner
+
+                    // System.out.println("\n");
+                    // System.out.println(winner);
+                    // System.out.println(team);
+
+                    // System.out.println("Attacker index: " + selected_mob_index);
+                    // System.out.println("Defender index: " + enemy_mob_index);
+
+                    // System.out.println(interactive_functions);
+                    // System.out.println(enemy_functions);
+
 
                 }
 
@@ -416,6 +440,7 @@ public class GameFunctionality implements KeyListener {
             }
 
         } catch (Exception e) {
+            System.out.println(e);
 
         }
 
