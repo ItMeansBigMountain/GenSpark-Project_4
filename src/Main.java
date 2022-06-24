@@ -131,7 +131,10 @@ public class Main {
             player1_turn = !player1_turn;
             List<Object> current_mobs = (player1_turn ? player_one_mobs : player_two_mobs);
             List<Object> enemy_mobs = (player1_turn ? player_two_mobs : player_one_mobs);
-            dice = new int[]{random.ints(1, 6).findFirst().getAsInt(), random.ints(1, 6).findAny().getAsInt()};
+
+            // dice =  new int[]{99,99}; //DEBUG
+             dice = new int[]{random.ints(1, 6).findFirst().getAsInt(), random.ints(1, 6).findAny().getAsInt()};
+
             message_box.push("DICE ROLL VERTICAL: " + dice[0]);
             message_box.push("DICE ROLL HORIZONTAL: " + dice[1]);
 
@@ -228,8 +231,6 @@ public class Main {
                     }
 
                 }
-
-
                 if (i == 9) {
                     System.out.print("\t\t\t\t\t ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -239,8 +240,6 @@ public class Main {
                         System.out.print(first_letter + lvl + "\t\t");
                     }
                 }
-
-
                 if (i == 10) {
                     System.out.print("vertex".toUpperCase() + "\t\t\t  ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -260,8 +259,6 @@ public class Main {
 
                     }
                 }
-
-
                 if (i == 11) {
                     System.out.print("horizontal min".toUpperCase() + "\t\t ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -273,9 +270,9 @@ public class Main {
                             System.out.print(display_int + "\t\t");
                         } else if (current_mobs.get(x) instanceof Goblin) {
                             Goblin goblin = (Goblin) current_mobs.get(x);
+                            display_int = goblin.getCoordinate()[1] - dice[1];
                             display_int = display_int > 21 ? 21 : display_int;
                             display_int = display_int < 2 ? 2 : display_int;
-                            display_int = goblin.getCoordinate()[1] - dice[1];
                             System.out.print(display_int + "\t\t");
                         } else if (current_mobs.get(x) instanceof Zombie) {
                             Zombie zombie = (Zombie) current_mobs.get(x);
@@ -292,7 +289,6 @@ public class Main {
                         }
                     }
                 }
-
                 if (i == 12) {
                     System.out.print("horizontal max".toUpperCase() + "\t\t ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -323,8 +319,6 @@ public class Main {
                         }
                     }
                 }
-
-
                 if (i == 13) {
                     System.out.print("vertical min".toUpperCase() + "\t\t ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -355,7 +349,6 @@ public class Main {
                         }
                     }
                 }
-
                 if (i == 14) {
                     System.out.print("vertical max".toUpperCase() + "\t\t ");
                     for (int x = 0; x < current_mobs.size(); x++) {
@@ -387,7 +380,6 @@ public class Main {
                     }
                 }
 
-
                 //MESSAGE BOX
                 if (i == 16) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
@@ -407,7 +399,6 @@ public class Main {
                 if (i == 21) {
                     if (!message_box.isEmpty()) System.out.print(message_box.pop());
                 }
-
 
                 if (i == 22) System.out.print("Choose Player & Location");
             }
@@ -434,8 +425,6 @@ public class Main {
             }
 
 
-            // MESSAGE BOX UPDATE
-            // message_box.push(String.valueOf(valid));
 
 
             //REASSIGN TROOPS STATUS

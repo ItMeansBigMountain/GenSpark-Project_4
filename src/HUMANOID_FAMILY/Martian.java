@@ -38,7 +38,7 @@ public class Martian extends Humanoid {
     }
 
 
-    public Martian(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates ) {
+    public Martian(int attack, int strength, int defence, int intelligence, int health, int compassion, int[] coordinates) {
         this.attack = attack;
         this.strength = strength;
         this.defence = defence;
@@ -119,6 +119,27 @@ public class Martian extends Humanoid {
 
     public void setCoordinate(int[] new_location) {
         this.coordinates = new_location;
+    }
+
+
+    public void intended_powerup() {
+        this.attack += 12;
+        this.strength += 12;
+        this.defence += 12;
+        this.combatLVL += 12;
+        this.intelligence += 12;
+        this.health += 12;
+        this.compassion += 12;
+    }
+
+    public void un_intended_powerup() {
+        this.attack += 5;
+        this.strength += 5;
+        this.defence += 5;
+        this.combatLVL += 5;
+        this.intelligence += 5;
+        this.health += 5;
+        this.compassion += 5;
     }
 
 

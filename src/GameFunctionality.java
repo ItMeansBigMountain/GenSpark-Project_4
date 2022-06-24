@@ -1,5 +1,4 @@
-import HUMANOID_FAMILY.Humanoid;
-import HUMANOID_FAMILY.Zombie;
+import HUMANOID_FAMILY.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -72,17 +71,17 @@ public class GameFunctionality implements KeyListener {
 
 
             //CHECK IF "TO" COORDINATE WITHIN RANGE OF GAME PIECE
-            if (to[1] < (from[1] - dice[1]) || to[1] > (dice[1] + from[1])    ) { //HORIZONTAL    8,12    5,5
+            if (to[1] < (from[1] - dice[1]) || to[1] > (dice[1] + from[1])) { //HORIZONTAL    8,12    5,5
                 throw new IllegalArgumentException();
             }
-            if (to[0] < (from[0] - dice[0]) || to[0] > (dice[0] + from[0] )  ) { //VERTICAL
+            if (to[0] < (from[0] - dice[0]) || to[0] > (dice[0] + from[0])) { //VERTICAL
                 throw new IllegalArgumentException();
             }
 
             return new int[][]{from, to};
 
         } catch (IllegalArgumentException e) {
-            System.out.println(String.format("Please enter coordinates\nHORIZONTAL: %o\nVERTICAL: %o",dice[1] , dice[0]));
+            System.out.println(String.format("Please enter coordinates\nHORIZONTAL: %o\nVERTICAL: %o", dice[1], dice[0]));
             return null;
         } catch (Exception e) {
             System.out.println("Please enter a valid option!\n");
@@ -330,6 +329,7 @@ public class GameFunctionality implements KeyListener {
         HashMap<String, HashMap<String, Method>> interactive_functions = null;
         HashMap<String, Method> setters = null;
         HashMap<String, Method> getters = null;
+        HashMap<String, Method> functional_functions = null;
 
 
         //CHECK IF COORDINATES ARE IN PLAYERS TROOPS
@@ -344,6 +344,7 @@ public class GameFunctionality implements KeyListener {
             interactive_functions = Humanoid.setters_and_getters(selected_mob);
             setters = interactive_functions.get("setters");
             getters = interactive_functions.get("getters");
+            functional_functions = interactive_functions.get("functional");
 
             // FUNCTIONALITY ALGO
             try {
@@ -381,9 +382,49 @@ public class GameFunctionality implements KeyListener {
         List<Object> fight_outcome;
         Method set_location = Humanoid.fetchMethod(setters, "setCoordinate(int[])");
         Method get_location = Humanoid.fetchMethod(getters, "getCoordinate()");
+        Method intended_powerup = Humanoid.fetchMethod(functional_functions, "intended_powerup()");
+        Method un_intended_powerup = Humanoid.fetchMethod(functional_functions, "un_intended_powerup()");
         try {
-            //COLLIDING WITH OTHER PLAYER WHEN MOVING
-            if (!(gameBoard[to[0]][to[1]] == 9)) {
+            //COLLIDING WITH OTHER PLAYER OR POWER UP  WHEN MOVING
+
+            //CHECK IF POWER-UP
+            boolean powerup = false;
+            boolean SUPER_powerup = false;
+            if (gameBoard[to[0]][to[1]] == 5) {
+                powerup = true;
+                if (selected_mob instanceof Human) {
+                    intended_powerup.invoke(selected_mob);
+                    SUPER_powerup = true;
+                } else {
+                    un_intended_powerup.invoke(selected_mob);
+                }
+
+            } else if (gameBoard[to[0]][to[1]] == 6) {
+                powerup = true;
+                if (selected_mob instanceof Goblin) {
+                    intended_powerup.invoke(selected_mob);
+                    SUPER_powerup = true;
+                } else {
+                    un_intended_powerup.invoke(selected_mob);
+                }
+            } else if (gameBoard[to[0]][to[1]] == 7) {
+                powerup = true;
+                if (selected_mob instanceof Martian) {
+                    SUPER_powerup = true;
+                    intended_powerup.invoke(selected_mob);
+                } else {
+                    un_intended_powerup.invoke(selected_mob);
+                }
+            } else if (gameBoard[to[0]][to[1]] == 8) {
+                powerup = true;
+                if (selected_mob instanceof Zombie) {
+                    SUPER_powerup = true;
+                    intended_powerup.invoke(selected_mob);
+                } else {
+                    un_intended_powerup.invoke(selected_mob);
+                }
+            }
+            else if (!(gameBoard[to[0]][to[1]] == 9)) {
 
                 //FIGHT!
                 fight_outcome = fight(interactive_functions, messages, enemy_mobs, selected_mob, to, player1_turn);
@@ -428,8 +469,8 @@ public class GameFunctionality implements KeyListener {
                     }
 
                     //DEBUG
-                    System.out.println(current_mobs); // update if enemy wins
-                    System.out.println(enemy_mobs); // update if you win
+                    // System.out.println(current_mobs); // update if enemy wins
+                    // System.out.println(enemy_mobs); // update if you win
 
                     // System.out.println("\n");
                     // System.out.println(winner);
@@ -445,12 +486,23 @@ public class GameFunctionality implements KeyListener {
                 }
 
 
-            } else {
+            }
+            else {
                 //SWAPPING EMPTY-SPACE AND PLAYER
                 set_location.invoke(selected_mob, to);
                 int temp = gameBoard[from[0]][from[1]];
                 gameBoard[from[0]][from[1]] = gameBoard[to[0]][to[1]];
                 gameBoard[to[0]][to[1]] = temp;
+            }
+
+
+            if (powerup) {
+                //SWAPPING EMPTY-SPACE AND PLAYER
+                set_location.invoke(selected_mob, to);
+                int temp = gameBoard[from[0]][from[1]];
+                gameBoard[from[0]][from[1]] = gameBoard[to[0]][to[1]];
+                gameBoard[to[0]][to[1]] = temp;
+                messages.push(SUPER_powerup? "SUPER POWER UP COLLECTED!":"POWER UP COLLECTED");
             }
 
         } catch (Exception e) {

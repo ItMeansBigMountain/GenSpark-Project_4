@@ -87,6 +87,7 @@ public class Humanoid {
             Method[] methods = obj.getMethods();
             HashMap<String, Method> setter_functions = new HashMap<String, Method>();
             HashMap<String, Method> getter_functions = new HashMap<String, Method>();
+            HashMap<String, Method> functional_functions = new HashMap<String, Method>();
             String function_temp_name;
             boolean down;
             int counter;
@@ -119,12 +120,17 @@ public class Humanoid {
                     // getter_functions.put(  String.valueOf(  methods[i]   ) ,   methods[i]);
                     getter_functions.put(function_temp_name, methods[i]);
                 }
+                else
+                {
+                    functional_functions.put(function_temp_name, methods[i]);
+                }
             }
 
 
             //DATA SANITIZATION COMPLETE
             output.put("setters", setter_functions);
             output.put("getters", getter_functions);
+            output.put("functional", functional_functions);
 
 
         } catch (Exception e) {
