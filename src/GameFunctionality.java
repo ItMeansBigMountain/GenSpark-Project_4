@@ -70,7 +70,7 @@ public class GameFunctionality implements KeyListener {
             int[] to = {Integer.parseInt(to_coordinate_string[1]), Integer.parseInt(to_coordinate_string[0])};
 
 
-            //CHECK IF "TO" COORDINATE WITHIN RANGE OF GAME PIECE
+            //CHECK IF "TO" COORDINATE WITHIN RANGE OF DICE ROLL
             if (to[1] < (from[1] - dice[1]) || to[1] > (dice[1] + from[1])) { //HORIZONTAL    8,12    5,5
                 throw new IllegalArgumentException();
             }
@@ -90,7 +90,16 @@ public class GameFunctionality implements KeyListener {
 
     }
 
-    public static List<Object> fight(HashMap<String, HashMap<String, Method>> selected_mob_functions, Stack<String> messages, List<Object> enemy_mobs, Object selected_mob, int[] to, boolean player1) {
+
+
+    public static List<Object> fight(
+            HashMap<String, HashMap<String, Method>> selected_mob_functions,
+            Stack<String> messages,
+            List<Object> enemy_mobs,
+            Object selected_mob,
+            int[] to,
+            boolean player1
+    ) {
         List<Object> output = new ArrayList<>();
         Object winner = null;
 
@@ -266,11 +275,9 @@ public class GameFunctionality implements KeyListener {
             //RIGHT AFTER THE FIGHT
 
             if ((int) selected_player_get_health.invoke(selected_mob) > (int) get_health.invoke(iteration_mob)) {
-                // System.out.println(player1 ? "Player one wins the fight!" : "player two wins the fight!");
                 winner = selected_mob;
                 team = "ATTACKER ";
             } else {
-                // System.out.println(player1 ? "Player two wins the fight!" : "player one wins the fight!");
                 winner = iteration_mob;
                 team = "DEFENDER ";
             }
@@ -295,7 +302,17 @@ public class GameFunctionality implements KeyListener {
         return output;
     }
 
-    public ArrayList<Object> coordinate(boolean player1_turn, Stack<String> messages, int[][] coordinates, int[][] gameBoard, List current_mobs, List enemy_mobs) {
+
+
+
+    public ArrayList<Object> coordinate(
+            boolean player1_turn,
+            Stack<String> messages,
+            int[][] coordinates,
+            int[][] gameBoard,
+            List current_mobs,
+            List enemy_mobs
+    ) {
         ArrayList<Object> output = new ArrayList<Object>();
 
         //CHECK FOR OUT OF BOUNDS COORDINATES
@@ -423,17 +440,15 @@ public class GameFunctionality implements KeyListener {
                 } else {
                     un_intended_powerup.invoke(selected_mob);
                 }
-            }
-            else if (!(gameBoard[to[0]][to[1]] == 9)) {
+            } else if (!(gameBoard[to[0]][to[1]] == 9)) {
 
                 //FIGHT!
                 fight_outcome = fight(interactive_functions, messages, enemy_mobs, selected_mob, to, player1_turn);
                 messages = (Stack<String>) fight_outcome.get(0);
                 Object winner = (Object) fight_outcome.get(1);
 
-                //ERROR SKIPPING THIS
+                //FRIENDLY FIRE
                 if (winner == null) {
-                    //INVALID  RETURN
                     System.out.println("YOU CANNOT ATTACK MATES.");
                     output.add(false);
                     output.add(gameBoard);
@@ -486,8 +501,7 @@ public class GameFunctionality implements KeyListener {
                 }
 
 
-            }
-            else {
+            } else {
                 //SWAPPING EMPTY-SPACE AND PLAYER
                 set_location.invoke(selected_mob, to);
                 int temp = gameBoard[from[0]][from[1]];
@@ -502,7 +516,7 @@ public class GameFunctionality implements KeyListener {
                 int temp = gameBoard[from[0]][from[1]];
                 gameBoard[from[0]][from[1]] = gameBoard[to[0]][to[1]];
                 gameBoard[to[0]][to[1]] = temp;
-                messages.push(SUPER_powerup? "SUPER POWER UP COLLECTED!":"POWER UP COLLECTED");
+                messages.push(SUPER_powerup ? "SUPER POWER UP COLLECTED!" : "POWER UP COLLECTED");
             }
 
         } catch (Exception e) {
@@ -518,6 +532,284 @@ public class GameFunctionality implements KeyListener {
         output.add(enemy_mobs);
         output.add(messages);
         return output;
+    }
+
+
+
+
+
+    public void draw_game(
+            int[][] game_board,
+            int[] dice,
+            int display_int,
+            int round,
+            boolean player1_turn,
+            List<Object> current_mobs,
+            HashMap<Integer, String> game_key,
+            Stack<String> message_box
+    ) {
+        for (int i = 0; i < game_board.length; i++) {
+            System.out.println();
+            System.out.print(String.valueOf(i) + "\t");
+            //EACH ROW
+            for (int y = 0; y < game_board[i].length; y++) {
+                System.out.print(game_key.get(game_board[i][y]) + "\t");
+            }
+            // APPEND TO SIDE BAR SCREEN
+            if (i == 0) System.out.print("TURN: " + round);
+            if (i == 1) System.out.print("PLAYER: " + (player1_turn ? "One" : "Two"));
+            if (i == 2) System.out.print("TROOPS: " + current_mobs.size());
+            if (i == 4) System.out.print("STATS");
+            if (i == 5) {
+                System.out.print("hp".toUpperCase() + "\t\t\t\t\t");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        System.out.print(human.getHealth() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        System.out.print(goblin.getHealth() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        System.out.print(zombie.getHealth() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        System.out.print(martian.getHealth() + "\t|\t");
+                    }
+
+                }
+
+            }
+            if (i == 6) {
+                System.out.print("atk".toUpperCase() + "\t\t\t\t\t");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        System.out.print(human.getAttack() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        System.out.print(goblin.getAttack() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        System.out.print(zombie.getAttack() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        System.out.print(martian.getAttack() + "\t|\t");
+                    }
+
+                }
+
+            }
+            if (i == 7) {
+                System.out.print("str".toUpperCase() + "\t\t\t\t\t");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        System.out.print(human.getStrength() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        System.out.print(goblin.getStrength() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        System.out.print(zombie.getStrength() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        System.out.print(martian.getStrength() + "\t|\t");
+                    }
+
+                }
+
+            }
+            if (i == 8) {
+                System.out.print("def".toUpperCase() + "\t\t\t\t\t");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        System.out.print(human.getDefence() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        System.out.print(goblin.getDefence() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        System.out.print(zombie.getDefence() + "\t|\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        System.out.print(martian.getDefence() + "\t|\t");
+                    }
+                }
+
+            }
+            if (i == 9) {
+                System.out.print("\t\t\t\t\t ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    int len = String.valueOf(current_mobs.get(x)).length();
+                    String first_letter = String.valueOf(String.valueOf(current_mobs.get(x)).charAt(0)).toLowerCase();
+                    String lvl = String.valueOf(current_mobs.get(x)).split(":")[1];
+                    System.out.print(first_letter + lvl + "\t\t");
+                }
+            }
+            if (i == 10) {
+                System.out.print("vertex".toUpperCase() + "\t\t\t  ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        System.out.print("[" + human.getCoordinate()[1] + "," + human.getCoordinate()[0] + "]  ");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        System.out.print("[" + goblin.getCoordinate()[1] + "," + goblin.getCoordinate()[0] + "]  ");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        System.out.print("[" + zombie.getCoordinate()[1] + "," + zombie.getCoordinate()[0] + "]  ");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        System.out.print("[" + martian.getCoordinate()[1] + "," + martian.getCoordinate()[0] + "]  ");
+                    }
+
+                }
+            }
+            if (i == 11) {
+                System.out.print("horizontal min".toUpperCase() + "\t\t ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        display_int = human.getCoordinate()[1] - dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        display_int = goblin.getCoordinate()[1] - dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        display_int = zombie.getCoordinate()[1] - dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        display_int = martian.getCoordinate()[1] - dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    }
+                }
+            }
+            if (i == 12) {
+                System.out.print("horizontal max".toUpperCase() + "\t\t ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        display_int = human.getCoordinate()[1] + dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        display_int = goblin.getCoordinate()[1] + dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        display_int = zombie.getCoordinate()[1] + dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        display_int = martian.getCoordinate()[1] + dice[1];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    }
+                }
+            }
+            if (i == 13) {
+                System.out.print("vertical min".toUpperCase() + "\t\t ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        display_int = human.getCoordinate()[0] - dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        display_int = goblin.getCoordinate()[0] - dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        display_int = zombie.getCoordinate()[0] - dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        display_int = martian.getCoordinate()[0] - dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    }
+                }
+            }
+            if (i == 14) {
+                System.out.print("vertical max".toUpperCase() + "\t\t ");
+                for (int x = 0; x < current_mobs.size(); x++) {
+                    if (current_mobs.get(x) instanceof Human) {
+                        Human human = (Human) current_mobs.get(x);
+                        display_int = human.getCoordinate()[0] + dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Goblin) {
+                        Goblin goblin = (Goblin) current_mobs.get(x);
+                        display_int = goblin.getCoordinate()[0] + dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Zombie) {
+                        Zombie zombie = (Zombie) current_mobs.get(x);
+                        display_int = zombie.getCoordinate()[0] + dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    } else if (current_mobs.get(x) instanceof Martian) {
+                        Martian martian = (Martian) current_mobs.get(x);
+                        display_int = martian.getCoordinate()[0] + dice[0];
+                        display_int = display_int > 21 ? 21 : display_int;
+                        display_int = display_int < 2 ? 2 : display_int;
+                        System.out.print(display_int + "\t\t");
+                    }
+                }
+            }
+
+            //MESSAGE BOX
+            if (i == 16) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+            if (i == 17) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+            if (i == 18) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+            if (i == 19) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+            if (i == 20) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+            if (i == 21) {
+                if (!message_box.isEmpty()) System.out.print(message_box.pop());
+            }
+
+            if (i == 22) System.out.print("Choose Player & Location");
+        }
     }
 
 
